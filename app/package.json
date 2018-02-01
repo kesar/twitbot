@@ -1,0 +1,38 @@
+
+{
+  "name": "TwitBot",
+  "version": "1.0.0",
+  "description": "node.js based tipping bot for EOS",
+  "main": "twitter",
+  "dependencies": {
+    "js-yaml": "~3.2.2",
+    "node-altcoin": "0.1.2",
+    "twit": "2.1.0",
+    "winston": "~0.8.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node twitter.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kesar/twitbot.git"
+  },
+  "author": "Infernoman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kesar/twitbot/issues"
+  },
+  "homepage": "https://github.com/kesar/twitbot",
+  "keywords": [
+    "eos",
+    "node",
+    "tip",
+    "tipbot",
+    "twitter",
+    "rpc",
+    "ticker",
+    "bot"
+  ]
+}

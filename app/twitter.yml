@@ -1,0 +1,18 @@
+log:
+  file: twitter.log
+  level: "info"
+rpc:
+  host: localhost
+  port: 8888
+  private_key: key
+coin:
+  withdrawal_fee: 1
+  min_withdraw: 5
+  min_confirmations: 3
+  min_tip: 0.01
+twitter:
+  username: EOSPayTip
+  consumer_key: CHANGE_ME
+  consumer_secret: CHANGE_ME
+  access_token: CHANGE_ME
+  access_token_secret: CHANGE_ME
