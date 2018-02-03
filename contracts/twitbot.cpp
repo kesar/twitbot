@@ -34,7 +34,7 @@ extern "C" {
 
         if (code == N(eos) && action == N(transfer)) {
             print("Transfer received!\n");
-            print(current_message);
+            //print(current_message);
             apply_transfer(current_message<TWITBOT::transfer>());
             // assert(false, "rejecting transaction!"); // How to throw an exception
         }
