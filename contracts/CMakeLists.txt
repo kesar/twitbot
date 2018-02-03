@@ -1,0 +1,13 @@
+include(wasm)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_subdirectory(currency)
+add_subdirectory(exchange)
+add_subdirectory(infinite)
+add_subdirectory(proxy)
+add_subdirectory(simpledb)
+add_subdirectory(storage)
+add_subdirectory(test_api)
+add_subdirectory(twitbot)
+
+
