@@ -2,8 +2,6 @@ find_package(EOSIO REQUIRED)
 find_package(Wasm REQUIRED)
 find_package(Binaryen REQUIRED)
 
-# TODO fix -I$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>
-
 macro(add_wast target)
     set(list_var "${ARGN}")
     foreach(srcfile IN LISTS list_var)
@@ -35,11 +33,15 @@ macro(add_wast target)
 endmacro()
 
 macro(target_generate_abi target header)
-    add_custom_command(TARGET ${target}
-        POST_BUILD
+    add_custom_command(OUTPUT ${target}.abi
+        DEPENDS ${header}
         COMMAND ${EOSIO_ABI_GEN} -extra-arg=-c -extra-arg=--std=c++14 -extra-arg=--target=wasm32
         -extra-arg=-I${EOSIO_INCLUDE_DIRS}  -extra-arg=-I${CMAKE_CURRENT_BINARY_DIR}
         -extra-arg=-fparse-all-comments -destination-file=${target}.abi -verbose=0
-        -context=${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${header} --
+        -context=${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${header} --
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+    set_source_files_properties( details/part.out PROPERTIES GENERATED TRUE )
+
+    add_custom_target(${target}_abi ALL DEPENDS ${target}.abi SOURCES ${header})
 endmacro()

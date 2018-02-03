@@ -9,6 +9,9 @@
 namespace TWITBOT {
     using namespace eosio;
 
+/**
+ *  @abi action
+ */
     struct transfer {
         static const uint64_t action_type = N(transfer);
         account_name from;
