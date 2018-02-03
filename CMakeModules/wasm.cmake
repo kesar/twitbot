@@ -1,4 +1,4 @@
-find_package(EOS REQUIRED)
+find_package(EOSIO REQUIRED)
 find_package(Wasm REQUIRED)
 find_package(Binaryen REQUIRED)
 
