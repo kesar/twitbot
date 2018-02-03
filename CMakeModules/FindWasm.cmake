@@ -7,31 +7,20 @@
 
 #/home/asini/opt/wasm/bin/llvm-config
 
-find_file(WASM_LLVM_CONFIG llvm-config HITS ${WASM_ROOT}/bin)
-
-if(WASM_LLVM_CONFIG)
-  execute_process(
-    COMMAND ${WASM_LLVM_CONFIG} --bindir
-    RESULT_VARIABLE WASM_LLVM_CONFIG_OK
-    OUTPUT_VARIABLE WASM_LLVM_BIN
-  )
-endif()
-
-#if("${WASM_LLVM_CONFIG_OK}" STREQUAL "0")
-
-find_file(WASM_CLANG clang HITS ${WASM_LLVM_BIN})
-find_file(WASM_LLC llc HITS ${WASM_LLVM_BIN})
-find_file(WASM_LLVM_LINK llvm-link HITS ${WASM_LLVM_BIN})
-
-message(STATUS "Found Wasm clang: ${WASM_CLANG}")
-message(STATUS "Found Wasm llc: ${WASM_LLC}")
-message(STATUS "Found Wasm llvm-link: ${WASM_LLVM_LINK}")
+find_file(WASM_LLVM_CONFIG llvm-config HITS ${WASM_ROOT}/bin NO_DEFAULT_PATH)
+find_file(WASM_CLANG clang HITS ${WASM_ROOT}/bin NO_DEFAULT_PATH)
+find_file(WASM_LLC llc HITS ${WASM_ROOT}/bin NO_DEFAULT_PATH)
+find_file(WASM_LLVM_LINK llvm-link HITS ${WASM_ROOT}/bin NO_DEFAULT_PATH)
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set EOS_FOUND to TRUE
 # if all listed variables are TRUE
 
 find_package_handle_standard_args(Wasm DEFAULT_MSG WASM_LLVM_CONFIG)
+find_package_handle_standard_args(WASM_CLANG DEFAULT_MSG WASM_CLANG)
+find_package_handle_standard_args(WASM_LLC DEFAULT_MSG WASM_LLC)
+find_package_handle_standard_args(WASM_LLVM_LINK DEFAULT_MSG WASM_LLVM_LINK)
+
 
 #mark_as_advanced(EOS_INCLUDE_DIR EOS_LIBRARY)
 
