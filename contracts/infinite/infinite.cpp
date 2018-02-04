@@ -2,7 +2,7 @@
  *  @file
  *  @copyright defined in eos/LICENSE.txt
  */
-#include <infinite/infinite.hpp> /// defines transfer struct (abi)
+#include "infinite.hpp" /// defines transfer struct (abi)
 
 namespace infinite {
    using namespace eosio;

@@ -2,8 +2,8 @@
  *  @file
  *  @copyright defined in eos/LICENSE.txt
  */
-#include <proxy/proxy.hpp>
-#include <currency/currency.hpp>
+#include "proxy.hpp"
+#include "../currency/currency.hpp"
 
 namespace proxy {
    using namespace eosio;

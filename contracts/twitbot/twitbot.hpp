@@ -1,6 +1,6 @@
-#include <eoslib/eos.hpp>
-#include <eoslib/token.hpp>
-#include <eoslib/db.hpp>
+#include "../eoslib/eos.hpp"
+#include "../eoslib/token.hpp"
+#include "../eoslib/db.hpp"
 
 #ifndef TWITBOT
 #define TWITBOT twitbot

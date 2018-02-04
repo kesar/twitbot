@@ -2,7 +2,7 @@
  *  @file
  *  @copyright defined in eos/LICENSE.txt
  */
-#include <currency/currency.hpp>
+#include "../currency/currency.hpp"
 
 namespace exchange {
 
