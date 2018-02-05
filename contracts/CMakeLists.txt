@@ -1,5 +1,6 @@
 include(wasm)
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(currency)
 add_subdirectory(exchange)
