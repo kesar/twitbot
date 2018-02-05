@@ -1,4 +1,5 @@
 #include "twitbot.hpp"
+#include "../eoslib/raw.hpp"
 
 namespace TWITBOT {
     using namespace eosio;
@@ -19,6 +20,8 @@ namespace TWITBOT {
         // TODO: check that this is called by twitbot account
         // TODO: check that from has balance and send it to destination
         print("got into apply tipping: ", msg.quantity, "\n");
+       // bytes b = raw::pack(msg.quantity);
+       // uint32_t err = store_str( N(twitbot), N(tipping), (char *)msg.account.get_data(), msg.account.get_size(), (char*)b.data, b.len);
     }
 }
 
@@ -49,7 +52,7 @@ extern "C" {
                 break;
             case N(tip):
                 print("tipping ...!\n");
-                apply_tipping(current_message<tipping>());
+                //apply_tipping(current_message<tipping>());
                 break;
             default:
                 break;
