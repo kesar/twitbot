@@ -3,7 +3,7 @@
 namespace TWITBOT {
     using namespace eosio;
 
-    void apply_transfer(const TWITBOT::transfer &msg) {
+    void apply_transfer(const eosio::transfer &msg) {
         // TODO: get memo (to know the account)
         // TODO: create database of twitter account -> amount
         print("got into apply transfer: ", msg.quantity," ", "\n");
@@ -35,7 +35,7 @@ extern "C" {
         if (code == N(eos) && action == N(transfer)) {
             print("Transfer received!\n");
             //print(current_message);
-            apply_transfer(current_message<TWITBOT::transfer>());
+            apply_transfer(current_message<eosio::transfer>());
             // assert(false, "rejecting transaction!"); // How to throw an exception
         }
 
