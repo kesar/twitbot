@@ -18,16 +18,7 @@ public:
         uint64_t     quantity;
         string       memo;
 
-        template<typename DataStream>
-        friend DataStream& operator << ( DataStream& ds, const transfer& t ){
-            return ds << t.from << t.to << t.quantity << t.memo;
-        }
-
-        template<typename DataStream>
-        friend DataStream& operator >> ( DataStream& ds,  transfer& t ){
-            return ds >> t.from >> t.to >> t.quantity >> t.memo;
-
-        }
+        EOSLIB_SERIALIZE(transfer, (from)(to)(quantity)(memo))
     };
 
     static void on( const transfer& act ) {
