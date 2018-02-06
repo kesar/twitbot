@@ -5,7 +5,7 @@
 #  EOSIO_LIBRARIES - The libraries needed to use EOS
 #  EOSIO_DEFINITIONS - Compiler switches required for using EOS
 
-find_path(EOSIO_INCLUDE_DIR eoslib/eos.hpp HINTS ${EOSIO_ROOT}/include)
+find_path(EOSIO_INCLUDE_DIR eosiolib/eos.hpp HINTS ${EOSIO_ROOT}/include)
 find_file(EOSIO_ABI_GEN abi_gen HITS ${EOSIO_ROOT}/bin)
 
 include(FindPackageHandleStandardArgs)
