@@ -1,5 +1,11 @@
 #include "twitbot.hpp"
 
+extern "C" {
+void apply( uint64_t code, uint64_t action ) {
+   twitbot::contract::apply( code, action );
+}
+}
+
 namespace TWITBOT {
 //    using namespace eosio;
 

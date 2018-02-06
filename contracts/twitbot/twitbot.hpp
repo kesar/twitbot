@@ -1,13 +1,17 @@
+#pragma once
+
 #include <eosiolib/eos.hpp>
 #include <eosiolib/token.hpp>
 #include <eosiolib/db.hpp>
 
-#ifndef TWITBOT
-#define TWITBOT twitbot
-#endif
-
-namespace TWITBOT {
-using namespace eosio;
+namespace twitbot {
+class contract {
+public:
+    static void apply( account_name c, action_name act) {
+       //eosio::dispatch<generic_currency, transfer_memo, issue>(c,act);
+        eosio::print("account: ", eosio::name(c), ", act: ", eosio::name(act));
+    }
+};
 
 ///**
 // *  @abi action
