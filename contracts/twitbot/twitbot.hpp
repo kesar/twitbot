@@ -1,8 +1,6 @@
 #pragma once
 
 #include <eosiolib/eos.hpp>
-#include <eosiolib/token.hpp>
-#include <eosiolib/db.hpp>
 
 namespace twitbot {
 class contract {
