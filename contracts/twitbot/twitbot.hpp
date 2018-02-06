@@ -1,6 +1,7 @@
 #pragma once
 
 #include <eosiolib/eos.hpp>
+#include <eosiolib/action.hpp>
 
 namespace twitbot {
 class contract {
@@ -9,6 +10,10 @@ public:
        //eosio::dispatch<generic_currency, transfer_memo, issue>(c,act);
         eosio::print("account: ", eosio::name(c), ", act: ", eosio::name(act), "\n");
     }
+
+    ACTION( code, transfer ){
+
+    };
 };
 
 ///**
