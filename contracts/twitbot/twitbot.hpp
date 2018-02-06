@@ -2,19 +2,25 @@
 
 #include <eosiolib/eos.hpp>
 #include <eosiolib/action.hpp>
+#include <eosiolib/dispatcher.hpp>
+#include <eosiolib/asset.hpp>
 
 namespace twitbot {
 class contract {
 public:
-    static void apply( account_name c, action_name act) {
-       //eosio::dispatch<generic_currency, transfer_memo, issue>(c,act);
-        eosio::print("account: ", eosio::name(c), ", act: ", eosio::name(act), "\n");
+    static void apply( account_name code, action_name action) {
+        //eosio::dispatch<generic_currency, transfer_memo, issue>(c,act);
+        eosio::print("account: ", eosio::name(code), ", act: ", eosio::name(action), "\n");
+
+        if (code == N(eosio) && action == N(transfer)) {
+            eosio::print("Transfer received!\n");
+        }
+        else
+            eosio::print("not received\n");
     }
-
-    ACTION( code, transfer ){
-
-    };
 };
+
+} // namespace
 
 ///**
 // *  @abi action
@@ -35,4 +41,4 @@ public:
 
 // TODO: add proper db
 // using accounts = eosio::table<N(defaultscope),N(currency),N(account),account,uint64_t>;
-}
+

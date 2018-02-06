@@ -23,7 +23,7 @@ namespace TWITBOT {
 
 //    void apply_tipping(const TWITBOT::tipping &msg) {
 //        // TODO: check that this is called by twitbot account
-//        // TODO: check that from has balance and send it to destination
+//        // TODO: check that from has balance and send it to destinationPW5J2gJSFPR5rRCQ92xsf4MkfYqoUKPPGg9LXycB81j6jxjmq8mtU
 //        print("got into apply tipping: ", msg.quantity, "\n");
 //    }
 //}
