@@ -4,6 +4,11 @@
 #include <eosiolib/action.hpp>
 #include <eosiolib/dispatcher.hpp>
 #include <eosiolib/asset.hpp>
+#include <eosiolib/string.hpp>
+
+using namespace eosio;
+
+
 
 namespace twitbot {
 class contract {
@@ -18,7 +23,31 @@ public:
         else
             eosio::print("not received\n");
     }
+
+//    ACTION( code, transfer ) {
+//          account_name from;
+//          account_name to;
+//          uint64_t     quantity;
+//          string       memo;
+
+//          template<typename DataStream>
+//          friend DataStream& operator << ( DataStream& ds, const transfer& t ){
+//             return ds << t.from << t.to << t.quantity << t.memo;
+//          }
+
+//          template<typename DataStream>
+//          friend DataStream& operator >> ( DataStream& ds,  transfer& t ){
+//             return ds >> t.from >> t.to >> t.quantity >> t.memo;
+
+//          }
+
+//       };
+//    };
 };
+
+
+
+
 
 } // namespace
 

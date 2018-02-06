@@ -5,9 +5,17 @@ find_package(Binaryen REQUIRED)
 macro(add_wast_target target)
     include_directories(${EOSIO_INCLUDE_DIRS})
 
-    set(list_var "${ARGN}")
+    foreach(item "${ARGN}")
+        string(REGEX MATCH ".+\\.cpp" item ${item})
+        if(item)
+            list(APPEND Sources ${item})
+        endif(item)
+    endforeach()
+
+    set(list_var "${Sources}")
     foreach(srcfile IN LISTS list_var)
         add_custom_command(OUTPUT ${srcfile}.bc
+            DEPENDS ${ARGN}
             COMMAND ${WASM_CLANG} -emit-llvm -O3 --std=c++14 --target=wasm32 -ffreestanding
             -nostdlib -fno-threadsafe-statics -fno-rtti -fno-exceptions
             "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>"
