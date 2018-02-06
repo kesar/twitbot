@@ -1,3 +1,3 @@
 file(GLOB ABI_FILES "*.abi")
-add_wast(simpledb simpledb.cpp)
 configure_file("${ABI_FILES}" "${CMAKE_CURRENT_BINARY_DIR}" COPYONLY)
+add_wast_target(asserter asserter.cpp)

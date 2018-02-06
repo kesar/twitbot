@@ -2,7 +2,7 @@ find_package(EOSIO REQUIRED)
 find_package(Wasm REQUIRED)
 find_package(Binaryen REQUIRED)
 
-macro(add_wast target)
+macro(add_wast_target target)
     include_directories(${EOSIO_INCLUDE_DIRS})
 
     set(list_var "${ARGN}")
