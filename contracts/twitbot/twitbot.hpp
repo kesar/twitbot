@@ -10,20 +10,21 @@ using namespace eosio;
 namespace twitbot {
 class contract {
 public:
+    name d;
     /**
      *  @abi table
      */
     struct account {
-       string twitter_account;
+       uint128_t twitter_account;
        uint64_t balance;
        EOSLIB_SERIALIZE( account, (twitter_account)(balance) )
     };
-    using accounts = table<N(twitbot), N(twitbot), N(account), account, string >;
+    using accounts = table<N(twitbot), N(twitbot), N(account), account, uint128_t >;
 
     using transfer = native_currency::transfer;
     static void on( const transfer& act ) {
         print("and the memo is ... ", act.memo, "\n");
-        account a = {act.memo, act.quantity};
+        //account a = {act.memo, act.quantity};
     }
 };
 
