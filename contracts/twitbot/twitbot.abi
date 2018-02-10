@@ -23,13 +23,13 @@
       "name": "tip",
       "base": "",
       "fields": [{
-          "name": "from_eos",
-          "type": "account_name"
+          "name": "from_twitter",
+          "type": "name"
         },{
           "name": "to_twitter",
           "type": "name"
         },{
-          "name": "amount",
+          "name": "quantity",
           "type": "uint64"
         }
       ]
