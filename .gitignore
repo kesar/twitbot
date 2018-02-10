@@ -1,1 +1,4 @@
 .idea
+build/
+blockchain/
+.DS_Store
