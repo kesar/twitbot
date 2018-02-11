@@ -1,0 +1,58 @@
+{
+  "types": [],
+  "structs": [{
+      "name": "account",
+      "base": "",
+      "fields": [{
+          "name": "twitter_account",
+          "type": "name"
+        },{
+          "name": "balance",
+          "type": "uint64"
+        }
+      ]
+    },{
+      "name": "tip",
+      "base": "",
+      "fields": [{
+          "name": "from_twitter",
+          "type": "name"
+        },{
+          "name": "to_twitter",
+          "type": "name"
+        },{
+          "name": "quantity",
+          "type": "uint64"
+        }
+      ]
+    },{
+      "name": "withdraw",
+      "base": "",
+      "fields": [{
+          "name": "to_eos",
+          "type": "account_name"
+        }
+      ]
+    }
+  ],
+  "actions": [{
+      "name": "tip",
+      "type": "tip"
+    },{
+      "name": "withdraw",
+      "type": "withdraw"
+    }
+  ],
+  "tables": [{
+      "name": "account",
+      "index_type": "i64",
+      "key_names": [
+        "twitter_account"
+      ],
+      "key_types": [
+        "name"
+      ],
+      "type": "account"
+    }
+  ]
+}
