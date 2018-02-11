@@ -11,9 +11,29 @@
           "type": "uint64"
         }
       ]
+    },{
+    "name": "tip",
+    "base": "",
+    "fields": [
+       {"name":"to", "type":"account_name"},
+       {"name":"quantity", "type":"asset"}
+    ]
+ },{
+     "name": "withdraw",
+     "base": "",
+     "fields": [
+       {"name":"to_eos", "type":"account_name"}
+     ]
+   }
+  ],
+  "actions": [{
+      "name": "tip",
+      "type": "tip"
+    },{
+      "name": "withdraw",
+      "type": "withdraw"
     }
   ],
-  "actions": [],
   "tables": [{
       "name": "account",
       "index_type": "i64",

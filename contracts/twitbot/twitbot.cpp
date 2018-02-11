@@ -1,5 +1,6 @@
 #include "twitbot.hpp"
 
+
 extern "C" {
 void apply(uint64_t code, uint64_t action) {
     eosio::print("account: ", eosio::name(code), ", act: ", eosio::name(action), "\n");
@@ -62,6 +63,14 @@ void twitbot::contract::on(const withdraw &withdraw) {
     accounts::update(existing_account);
     // TODO: send EOS
     eosio::print("it should send: ", withdraw.to_eos);
+    eosio::native_currency::transfer trf;
+    trf.from = current_receiver();
+    trf.to = withdraw.to_eos;
+    trf.quantity = existing_account.balance;
+    trf.memo = "from twitbot";
+
+    eosio:: action act( permission_level(code,N(twitbot)), trf);
+    act.send();
 }
 
 uint64_t twitbot::contract::string_to_name(const char *str) {
