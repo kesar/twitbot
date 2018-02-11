@@ -21,26 +21,6 @@ namespace twitbot {
             EOSLIB_SERIALIZE(account, (twitter_account)(balance))
         };
 
-        /**
-         *  @abi action
-         */
-        struct tip {
-            name from_twitter;
-            name to_twitter;
-            uint64_t quantity;
-
-            EOSLIB_SERIALIZE(tip, (from_twitter)(to_twitter)(quantity));
-        };
-
-        /**
-         *  @abi action
-         */
-        struct withdraw {
-            account_name to_eos;
-
-            EOSLIB_SERIALIZE(withdraw, (to_eos));
-        };
-
         using accounts = table<
                 N(twitbot), // scope
                 N(twitbot), // code
@@ -51,6 +31,20 @@ namespace twitbot {
 
         using transfer = native_currency::transfer;
 
+        ACTION(TwitBotAccount, tip) {
+            name from_twitter;
+            name to_twitter;
+            uint64_t quantity;
+
+            EOSLIB_SERIALIZE(tip, (from_twitter)(to_twitter)(quantity));
+        };
+
+        ACTION(TwitBotAccount, withdraw) {
+            account_name to_eos;
+
+            EOSLIB_SERIALIZE(withdraw, (to_eos));
+        };
+
         static void on(const transfer &transfer) {
             eosio::print("transfering EOS to ", transfer.memo.get_data());
             account existing_account;
@@ -60,7 +54,7 @@ namespace twitbot {
                 existing_account.balance = existing_account.balance + transfer.quantity;
                 accounts::update(existing_account);
             } else {
-                existing_account.twitter_account = N("csr");
+                existing_account.twitter_account = twitter_name;
                 existing_account.balance = transfer.quantity;
                 accounts::store(existing_account);
             }
