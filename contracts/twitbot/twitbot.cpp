@@ -35,10 +35,12 @@ void twitbot::contract::on(const tip &tip) {
     eosio::print("tipping EOS to ", tip.to_twitter);
     account account_from;
     account account_to;
-    bool account_exists_from = accounts::get(tip.from_twitter, account_from);
-    bool account_exists_to = accounts::get(tip.to_twitter, account_to);
+    name from_twitter = string_to_name(tip.from_twitter.get_data());
+    name to_twitter = string_to_name(tip.to_twitter.get_data());
+    bool account_exists_from = accounts::get(from_twitter, account_from);
+    bool account_exists_to = accounts::get(to_twitter, account_to);
     assert(account_exists_from != false, "account does not exist");
-    assert(account_from.balance < tip.quantity, "account has not enough balance");
+    assert(account_from.balance >= tip.quantity, "account has not enough balance");
 
     account_from.balance = account_from.balance - tip.quantity;
     accounts::update(account_from);
@@ -47,7 +49,7 @@ void twitbot::contract::on(const tip &tip) {
         account_to.balance = account_to.balance + tip.quantity;
         accounts::update(account_to);
     } else {
-        account_to.twitter_account = tip.to_twitter;
+        account_to.twitter_account = to_twitter;
         account_to.balance = tip.quantity;
         accounts::store(account_to);
     }
