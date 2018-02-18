@@ -37,7 +37,7 @@ void twitbot::contract::on(const tip &tip) {
     account account_to;
     bool account_exists_from = accounts::get(tip.from_twitter, account_from);
     bool account_exists_to = accounts::get(tip.to_twitter, account_to);
-    assert(account_exists_from == false, "account does not exist");
+    assert(account_exists_from != false, "account does not exist");
     assert(account_from.balance < tip.quantity, "account has not enough balance");
 
     account_from.balance = account_from.balance - tip.quantity;
@@ -57,20 +57,20 @@ void twitbot::contract::on(const withdraw &withdraw) {
     eosio::print("withdraw to: ", withdraw.to_eos);
     require_auth(code);
     account existing_account;
-    bool account_exists = accounts::get(withdraw.to_eos, existing_account);
-    assert(account_exists == false, "account does not exist");
-    existing_account.balance = 0;
-    accounts::update(existing_account);
-    // TODO: send EOS
-    eosio::print("it should send: ", withdraw.to_eos);
+    name from_twitter = string_to_name(withdraw.from_twitter.get_data());
+    bool account_exists = accounts::get(from_twitter, existing_account);
+    assert(account_exists != false, "account does not exist");
+    eosio::print("it should send ", existing_account.balance, " to: ", existing_account.twitter_account);
+
     eosio::native_currency::transfer trf;
     trf.from = current_receiver();
     trf.to = withdraw.to_eos;
     trf.quantity = existing_account.balance;
-    trf.memo = "from twitbot";
-
-    eosio:: action act( permission_level(code,N(twitbot)), trf);
+    trf.memo = "From twitbot";
+    eosio::action act(permission_level(current_receiver(),N(active)), trf);
     act.send();
+    existing_account.balance = 0;
+    accounts::update(existing_account);
 }
 
 uint64_t twitbot::contract::string_to_name(const char *str) {

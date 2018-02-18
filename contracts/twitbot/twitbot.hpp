@@ -43,8 +43,9 @@ public:
 
     ACTION(code, withdraw) {
         account_name to_eos;
+        string from_twitter;
 
-        EOSLIB_SERIALIZE(withdraw, (to_eos));
+        EOSLIB_SERIALIZE(withdraw, (to_eos)(from_twitter));
     };
 
     static void on(const transfer &transfer);
