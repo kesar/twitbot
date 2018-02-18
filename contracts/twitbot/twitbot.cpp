@@ -3,20 +3,19 @@
 
 extern "C" {
 void apply(uint64_t code, uint64_t action) {
-    eosio::print("account: ", eosio::name(code), ", act: ", eosio::name(action), "\n");
 
     if (!eosio::dispatch<
             twitbot::contract,
             twitbot::contract::transfer,
             twitbot::contract::tip,
-            twitbot::contract::withdraw>(code, action)) {
+            twitbot::contract::withdraw
+    >(code, action)) {
         assert(0, "received unexpected action");
     }
 }
 } // extern
 
 void twitbot::contract::on(const twitbot::contract::transfer &transfer) {
-    eosio::print("transfering EOS to ", transfer.memo, "\n");
     account existing_account;
     name twitter_name = string_to_name(transfer.memo.get_data());
     bool account_exists = accounts::get(twitter_name, existing_account);
@@ -32,7 +31,6 @@ void twitbot::contract::on(const twitbot::contract::transfer &transfer) {
 
 void twitbot::contract::on(const tip &tip) {
     require_auth(code);
-    eosio::print("tipping EOS to ", tip.to_twitter);
     account account_from;
     account account_to;
     name from_twitter = string_to_name(tip.from_twitter.get_data());
@@ -56,14 +54,11 @@ void twitbot::contract::on(const tip &tip) {
 }
 
 void twitbot::contract::on(const withdraw &withdraw) {
-    eosio::print("withdraw to: ", withdraw.to_eos);
     require_auth(code);
     account existing_account;
     name from_twitter = string_to_name(withdraw.from_twitter.get_data());
     bool account_exists = accounts::get(from_twitter, existing_account);
     assert(account_exists != false, "account does not exist");
-    eosio::print("it should send ", existing_account.balance, " to: ", existing_account.twitter_account);
-
     eosio::native_currency::transfer trf;
     trf.from = current_receiver();
     trf.to = withdraw.to_eos;
@@ -76,10 +71,8 @@ void twitbot::contract::on(const withdraw &withdraw) {
 }
 
 uint64_t twitbot::contract::string_to_name(const char *str) {
-
     uint32_t len = 0;
     while( str[len] ) ++len;
-
     uint64_t value = 0;
 
     for( uint32_t i = 0; i <= 12; ++i ) {
@@ -93,10 +86,8 @@ uint64_t twitbot::contract::string_to_name(const char *str) {
         else {
             c &= 0x0f;
         }
-
         value |= c;
     }
-
     return value;
 }
 

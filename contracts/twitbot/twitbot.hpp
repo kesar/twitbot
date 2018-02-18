@@ -13,9 +13,6 @@ class contract {
      static const uint64_t code = N(twitbot);
 
 public:
-    /**
-         *  @abi table
-         */
     struct account {
         name twitter_account;
         uint64_t balance;
