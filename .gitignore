@@ -2,3 +2,4 @@
 build/
 blockchain/
 .DS_Store
+contracts/twitbot/twitbot.wast
