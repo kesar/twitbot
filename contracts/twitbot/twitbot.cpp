@@ -59,6 +59,7 @@ void twitbot::contract::on(const withdraw &withdraw) {
     name from_twitter = string_to_name(withdraw.from_twitter.get_data());
     bool account_exists = accounts::get(from_twitter, existing_account);
     assert(account_exists != false, "account does not exist");
+    assert(existing_account.balance > 0, "account has not enough balance");
     eosio::native_currency::transfer trf;
     trf.from = current_receiver();
     trf.to = withdraw.to_eos;
@@ -77,7 +78,7 @@ uint64_t twitbot::contract::string_to_name(const char *str) {
 
     for( uint32_t i = 0; i <= 12; ++i ) {
         uint64_t c = 0;
-        if( i < len && i <= 12 ) c = char_to_symbol( str[i] );
+        if( i < len && i <= 12 ) c = eosio::char_to_symbol( str[i] );
 
         if( i < 12 ) {
             c &= 0x1f;
