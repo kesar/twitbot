@@ -1,4 +1,3 @@
-
 {
   "name": "TwitBot",
   "version": "1.0.0",
@@ -6,9 +5,9 @@
   "main": "twitter",
   "dependencies": {
     "js-yaml": "~3.2.2",
-    "node-altcoin": "0.1.2",
     "twit": "2.1.0",
-    "winston": "~0.8.1"
+    "winston": "~0.8.1",
+    "eosjs": "^6.1.5"
   },
   "devDependencies": {},
   "scripts": {
