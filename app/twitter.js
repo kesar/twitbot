@@ -163,7 +163,7 @@ stream.on("tweet", function (tweet) {
             break;
 
         case "withdraw":
-            var match = message.match(/^.?withdraw (\S+) $/);
+            var match = message.match(/^.?withdraw (\S+)/);
             if (match === null) {
                 client.post("statuses/update", {
                     status: "@" + from + " Usage: !withdraw <your_eos_account> @ " + settings.twitter.username,
