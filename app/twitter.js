@@ -75,9 +75,8 @@ stream.on("tweet", function (tweet) {
         case "balance":
             node.getTableRows({
                 "json": true,
-                "table_key": "fdsfsd",
-                "scope": "twitbot",
-                "code": "twitbot",
+                "scope": settings.rpc.account,
+                "code": settings.rpc.account,
                 "table": "account",
                 "limit": 500 // TODO: do proper filter
             }).then(function (result) {
