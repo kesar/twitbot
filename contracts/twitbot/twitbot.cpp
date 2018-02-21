@@ -10,14 +10,14 @@ void apply(uint64_t code, uint64_t action) {
             twitbot::contract::tip,
             twitbot::contract::withdraw
     >(code, action)) {
-        assert(0, "received unexpected action");
+        eosio_assert(0, "received unexpected action");
     }
 }
 } // extern
 
 void twitbot::contract::on(const twitbot::contract::transfer &transfer) {
     account existing_account;
-    name twitter_name = string_to_name(transfer.memo.get_data());
+    name twitter_name = string_to_name(transfer.memo);
     bool account_exists = accounts::get(twitter_name, existing_account);
     if (account_exists) {
         existing_account.balance = existing_account.balance + transfer.quantity;
@@ -33,12 +33,12 @@ void twitbot::contract::on(const tip &tip) {
     require_auth(code);
     account account_from;
     account account_to;
-    name from_twitter = string_to_name(tip.from_twitter.get_data());
-    name to_twitter = string_to_name(tip.to_twitter.get_data());
+    name from_twitter = string_to_name(tip.from_twitter);
+    name to_twitter = string_to_name(tip.to_twitter);
     bool account_exists_from = accounts::get(from_twitter, account_from);
     bool account_exists_to = accounts::get(to_twitter, account_to);
-    assert(account_exists_from != false, "account does not exist");
-    assert(account_from.balance >= tip.quantity, "account has not enough balance");
+    eosio_assert(account_exists_from != false, "account does not exist");
+    eosio_assert(account_from.balance >= tip.quantity, "account has not enough balance");
 
     account_from.balance = account_from.balance - tip.quantity;
     accounts::update(account_from);
@@ -56,10 +56,10 @@ void twitbot::contract::on(const tip &tip) {
 void twitbot::contract::on(const withdraw &withdraw) {
     require_auth(code);
     account existing_account;
-    name from_twitter = string_to_name(withdraw.from_twitter.get_data());
+    name from_twitter = string_to_name(withdraw);
     bool account_exists = accounts::get(from_twitter, existing_account);
-    assert(account_exists != false, "account does not exist");
-    assert(existing_account.balance > 0, "account has not enough balance");
+    eosio_assert(account_exists != false, "account does not exist");
+    eosio_assert(existing_account.balance > 0, "account has not enough balance");
     eosio::native_currency::transfer trf;
     trf.from = current_receiver();
     trf.to = withdraw.to_eos;
@@ -71,7 +71,8 @@ void twitbot::contract::on(const withdraw &withdraw) {
     accounts::update(existing_account);
 }
 
-uint64_t twitbot::contract::string_to_name(const char *str) {
+uint64_t twitbot::contract::string_to_name(string str) {
+    // const char *str
     uint32_t len = 0;
     while( str[len] ) ++len;
     uint64_t value = 0;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <eosiolib/eos.hpp>
+#include <eosiolib/eosio.hpp>
 #include <eosiolib/db.hpp>
 #include <eosiolib/native_currency.hpp>
 #include <eosiolib/table.hpp>
@@ -20,10 +20,11 @@ public:
         EOSLIB_SERIALIZE(account, (twitter_account)(balance))
     };
 
-    using accounts = table<
+    using accounts = eosio::table<
         code, // scope
         code, // code
         N(account), // table
+        code, // account
         account, // record struct
         name // primary key
     >;
@@ -50,7 +51,7 @@ public:
     static void on(const withdraw &withdraw);
 
 private:
-    static uint64_t string_to_name( const char* str );
+    static uint64_t string_to_name(string str);
 };
 
 } // namespace
