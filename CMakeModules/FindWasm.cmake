@@ -16,11 +16,7 @@ include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set EOS_FOUND to TRUE
 # if all listed variables are TRUE
 
-find_package_handle_standard_args(Wasm DEFAULT_MSG WASM_LLVM_CONFIG)
-find_package_handle_standard_args(WASM_CLANG DEFAULT_MSG WASM_CLANG)
-find_package_handle_standard_args(WASM_LLC DEFAULT_MSG WASM_LLC)
-find_package_handle_standard_args(WASM_LLVM_LINK DEFAULT_MSG WASM_LLVM_LINK)
-
+find_package_handle_standard_args(Wasm DEFAULT_MSG WASM_LLVM_CONFIG WASM_CLANG WASM_LLC WASM_LLVM_LINK)
 
 #mark_as_advanced(EOS_INCLUDE_DIR EOS_LIBRARY)
 

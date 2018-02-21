@@ -1,0 +1,23 @@
+find_file(WASM_LLVM_CONFIG llvm-config HINTS ${WASM_ROOT}/bin)
+find_file(WASM_CLANG clang HINTS ${WASM_ROOT}/bin)
+find_file(WASM_LLC llc HINTS ${WASM_ROOT}/bin)
+find_file(WASM_LLVM_LINK llvm-link HINTS ${WASM_ROOT}/bin)
+
+#set(CMAKE_SYSTEM_NAME Linux)
+#set(CMAKE_SYSTEM_PROCESSOR arm)
+
+
+#UNSET(CMAKE_C_FLAGS CACHE)
+set(CMAKE_C_FLAGS_INIT "-v")
+#SET(CMAKE_C_FLAGS "-v -emit-llvm --target=wasm32 -O3 -ffreestanding -nostdlib -fno-threadsafe-statics -fno-rtti -fno-exceptions" CACHE STRING "" FORCE)
+set(CMAKE_C_COMPILER ${WASM_CLANG})
+set(CMAKE_CXX_COMPILER ${WASM_CLANG})
+
+
+
+set(CMAKE_C_LINK_EXECUTABLE "${WASM_LLVM_LINK} <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>")
+
+#set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+#set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+#set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+#set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
