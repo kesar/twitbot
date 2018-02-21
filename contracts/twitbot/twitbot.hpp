@@ -20,11 +20,10 @@ public:
         EOSLIB_SERIALIZE(account, (twitter_account)(balance))
     };
 
-    using accounts = eosio::table<
+    using accounts = table<
         code, // scope
         code, // code
         N(account), // table
-        code, // account
         account, // record struct
         name // primary key
     >;
@@ -51,7 +50,7 @@ public:
     static void on(const withdraw &withdraw);
 
 private:
-    static uint64_t string_to_name(string str);
+    static uint64_t string_to_name( const char* str );
 };
 
 } // namespace
