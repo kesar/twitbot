@@ -33,8 +33,8 @@ void twitbot::contract::on(const tip &tip) {
     require_auth(code);
     account account_from;
     account account_to;
-    name from_twitter = string_to_name(tip.from_twitter.get_data());
-    name to_twitter = string_to_name(tip.to_twitter.get_data());
+    name from_twitter = tip.from_twitter;
+    name to_twitter = tip.to_twitter;
     bool account_exists_from = accounts::get(from_twitter, account_from);
     bool account_exists_to = accounts::get(to_twitter, account_to);
     assert(account_exists_from != false, "account does not exist");
@@ -56,7 +56,7 @@ void twitbot::contract::on(const tip &tip) {
 void twitbot::contract::on(const withdraw &withdraw) {
     require_auth(code);
     account existing_account;
-    name from_twitter = string_to_name(withdraw.from_twitter.get_data());
+    name from_twitter = withdraw.from_twitter;
     bool account_exists = accounts::get(from_twitter, existing_account);
     assert(account_exists != false, "account does not exist");
     assert(existing_account.balance > 0, "account has not enough balance");

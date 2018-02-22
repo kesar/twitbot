@@ -31,8 +31,8 @@ public:
     using transfer = native_currency::transfer;
 
     ACTION(code, tip) {
-        string from_twitter;
-        string to_twitter;
+        name from_twitter;
+        name to_twitter;
         uint64_t quantity;
 
         EOSLIB_SERIALIZE(tip, (from_twitter)(to_twitter)(quantity));
@@ -40,7 +40,7 @@ public:
 
     ACTION(code, withdraw) {
         account_name to_eos;
-        string from_twitter;
+        name from_twitter;
 
         EOSLIB_SERIALIZE(withdraw, (to_eos)(from_twitter));
     };

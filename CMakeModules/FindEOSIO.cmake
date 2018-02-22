@@ -6,7 +6,7 @@
 #  EOSIO_DEFINITIONS - Compiler switches required for using EOS
 
 find_path(EOSIO_INCLUDE_DIR eosiolib/eos.hpp HINTS ${EOSIO_ROOT}/include)
-find_file(EOSIO_ABI_GEN abi_gen HITS ${EOSIO_ROOT}/bin)
+find_file(EOSIO_ABI_GEN abi_gen HINTS ${EOSIO_ROOT}/bin)
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set EOSIO_FOUND to TRUE
