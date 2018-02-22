@@ -16,6 +16,9 @@ void apply(uint64_t code, uint64_t action) {
 } // extern
 
 void twitbot::contract::on(const twitbot::contract::transfer &transfer) {
+    if (transfer.memo.get_size() == 0)
+        return;
+
     account existing_account;
     name twitter_name = string_to_name(transfer.memo.get_data());
     bool account_exists = accounts::get(twitter_name, existing_account);
@@ -64,7 +67,6 @@ void twitbot::contract::on(const withdraw &withdraw) {
     trf.from = current_receiver();
     trf.to = withdraw.to_eos;
     trf.quantity = existing_account.balance;
-    trf.memo = "From twitbot";
     eosio::action act(permission_level(current_receiver(),N(active)), trf);
     act.send();
     existing_account.balance = 0;
