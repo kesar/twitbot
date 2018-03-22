@@ -1,7 +1,7 @@
 #pragma once
 
 #include <eosiolib/eosio.hpp>
-#include <eosiolib/table.hpp>
+#include <eosiolib/multi_index.hpp>
 #include <eosiolib/native_currency.hpp>
 
 using namespace eosio;
@@ -13,24 +13,31 @@ namespace twitbot {
 
     public:
         struct account {
-            name twitter_account;
+            account_name name;
             uint64_t balance;
+            string twitter;
 
-            EOSLIB_SERIALIZE(account, (twitter_account)(balance))
+            uint64_t primary_key() const { return name; }
+
+            static key256 key(string twitter) {
+                return key256::make_from_word_sequence<uint64_t>(string_to_name(twitter.c_str()));
+            }
+
+            key256 get_key() const { return key(twitter); }
+
+
+            EOSLIB_SERIALIZE(account, (name)(balance)(twitter))
         };
 
-        using accounts = table64<
-                code, // scope
-                N(account), // table
-                code, // tba
-                account // record struct
-        >;
+        typedef eosio::multi_index<N(accounts), account,
+                eosio::indexed_by<N(bytwitter), eosio::const_mem_fun<account, key256, &account::get_key> >
+        > account_index_type;
 
         using transfer = native_currency::transfer;
 
         ACTION(code, tip) {
-            name from_twitter;
-            name to_twitter;
+            string from_twitter;
+            string to_twitter;
             uint64_t quantity;
 
             EOSLIB_SERIALIZE(tip, (from_twitter)(to_twitter)(quantity));
@@ -38,7 +45,14 @@ namespace twitbot {
 
         ACTION(code, withdraw) {
             account_name to_eos;
-            name from_twitter;
+            string from_twitter;
+
+            EOSLIB_SERIALIZE(withdraw, (to_eos)(from_twitter));
+        };
+
+        ACTION(code, claim) {
+            account_name to_eos;
+            string from_twitter;
 
             EOSLIB_SERIALIZE(withdraw, (to_eos)(from_twitter));
         };
@@ -46,6 +60,8 @@ namespace twitbot {
         static void on(const transfer &transfer);
 
         static void on(const tip &tip);
+
+        static void on(const claim &claim);
 
         static void on(const withdraw &withdraw);
     };

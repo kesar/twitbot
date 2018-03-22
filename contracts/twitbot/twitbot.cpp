@@ -15,48 +15,51 @@ void apply(uint64_t code, uint64_t action) {
 }
 
 void twitbot::contract::on(const twitbot::contract::transfer &transfer) {
-
-    eosio_assert(transfer.memo.length() > 0, "needs a memo with the name");
-    account existing_account;
-    name twitter_name = eosio::string_to_name(transfer.memo.c_str());
-
-    if (accounts::exists(twitter_name)) {
-        existing_account = accounts::get(twitter_name);
-        existing_account.balance = existing_account.balance + transfer.quantity;
-        accounts::set(existing_account);
+    account_index_type accounts(code, code);
+    auto account = accounts.find(transfer.from);
+    if (account == accounts.end()) {
+        eosio::print("Account does not exist. Creating...");
+        account = accounts.emplace(code, [&](auto &acc) {
+            acc.name = transfer.from;
+            acc.balance = transfer.quantity;
+        });
     } else {
-        existing_account.twitter_account = twitter_name;
-        existing_account.balance = transfer.quantity;
-        accounts::set(existing_account);
+        eosio::print("Account found. Updating...");
+        accounts.modify(account, 0, [&](auto &acc) {
+            acc.balance = transfer.quantity + acc.balance;
+        });
     }
 }
 
 void twitbot::contract::on(const tip &tip) {
     require_auth(code);
-    name from_twitter = tip.from_twitter;
-    name to_twitter = tip.to_twitter;
-    account account_to;
+/*
+    account_index_type accounts(code, code);
+    auto idx = accounts.template get_index<N(bytwitter)>();
 
-    eosio_assert(accounts::exists(from_twitter), "account does not exist");
-    account account_from = accounts::get(from_twitter);
-    eosio_assert(account_from.balance >= tip.quantity, "account has not enough balance");
-
-    account_from.balance = account_from.balance - tip.quantity;
-    accounts::set(account_from);
-
-    if (accounts::exists(to_twitter)) {
-        account_to = accounts::get(to_twitter);
-        account_to.balance = account_to.balance + tip.quantity;
-        accounts::set(account_to);
+    // FROM ACCOUNT
+    auto key_from = key256::make_from_word_sequence<uint64_t>(eosio::string_to_name(tip.from_twitter.c_str()));
+    auto account_from = idx.find(key_from);
+    if (account_from == idx.end()) {
+        eosio::assert(0, "Account does not exist.");
     } else {
-        account_to.twitter_account = to_twitter;
-        account_to.balance = tip.quantity;
-        accounts::set(account_to);
+        eosio::print("Account found. Updating...");
+        // TODO: Check balance
     }
+
+    // TO ACCOUNT
+    auto key_to = key256::make_from_word_sequence<uint64_t>(eosio::string_to_name(tip.to_twitter.c_str()));
+    auto account_to = idx.find(key_to);
+    if (account_to == idx.end()) {
+        eosio::print("Account does not exist. Creating...");
+    } else {
+        eosio::print("Account found. Updating...");
+    } */
 }
 
 void twitbot::contract::on(const withdraw &withdraw) {
     require_auth(code);
+    /*
     name from_twitter = withdraw.from_twitter;
     eosio_assert(accounts::exists(from_twitter), "account does not exist");
     account existing_account = accounts::get(from_twitter);
@@ -69,4 +72,25 @@ void twitbot::contract::on(const withdraw &withdraw) {
     act.send();
     existing_account.balance = 0;
     accounts::set(existing_account);
+     */
+}
+
+void twitbot::contract::on(const claim &claim) {
+    require_auth(code);
+/*
+    account_index_type accounts(code, code);
+    auto account = accounts.find(claim.to_eos);
+    if (account == accounts.end()) {
+        eosio::print("Account does not exist. Creating...");
+        account = accounts.emplace(code, [&](auto &acc) {
+            acc.twitter = claim.from_twitter;
+            acc.name = claim.to_eos;
+        });
+    } else {
+        eosio::print("Account found. Updating...");
+        accounts.modify(account, 0, [&](auto &acc) {
+            acc.twitter = claim.from_twitter;
+            acc.name = claim.to_eos;
+        });
+    }*/
 }

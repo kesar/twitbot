@@ -4,12 +4,15 @@
       "name": "account",
       "base": "",
       "fields": [{
-          "name": "twitter_account",
-          "type": "name"
+          "name": "name",
+          "type": "account_name"
         },{
           "name": "balance",
           "type": "uint64"
-        }
+        },{
+           "name": "twitter",
+           "type": "string"
+         }
       ]
     },{
     "name": "tip",
@@ -26,7 +29,14 @@
        {"name":"to_eos", "type":"account_name"},
        {"name":"from_twitter", "type":"name"}
      ]
-   }
+   },{
+         "name": "claim",
+         "base": "",
+         "fields": [
+           {"name":"to_eos", "type":"account_name"},
+           {"name":"from_twitter", "type":"name"}
+         ]
+       }
   ],
   "actions": [{
       "name": "tip",
@@ -34,16 +44,19 @@
     },{
       "name": "withdraw",
       "type": "withdraw"
-    }
+    },{
+           "name": "claim",
+           "type": "claim"
+     }
   ],
   "tables": [{
-      "name": "account",
+      "name": "accounts",
       "index_type": "i64",
       "key_names": [
-        "twitter_account"
+        "name"
       ],
       "key_types": [
-        "name"
+        "account_name"
       ],
       "type": "account"
     }
