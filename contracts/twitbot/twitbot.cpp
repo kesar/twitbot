@@ -19,8 +19,6 @@ public:
         eosio_assert(from_act->balance >= quantity, "must have funds");
 
         auto to_act = idx.find(account::key(to_twitter));
-        eosio_assert(to_act != idx.end(), "must exists to");
-
         if (to_act != idx.end()) { // exists
             idx.modify(to_act, 0, [&](account &act) {
                 act.balance = act.balance + quantity;
@@ -28,6 +26,7 @@ public:
 
         } else { // no exist
             accounts.emplace(_self, [&](account &act) {
+                act.id = nextId();
                 act.twitter = to_twitter;
                 act.balance = quantity;
             });
@@ -48,7 +47,7 @@ public:
         eosio_assert(from_act->name > 0, "must has name"); // TODO: test this
 
         action(permission_level{_self, N(active)}, N(eosio.token), N(transfer),
-               make_tuple(_self, from_act->name, from_act->balance, string("Twitbot sent"))).send();
+               make_tuple(_self, from_act->name, asset(from_act->balance, S(4,EOS)), string("Twitbot sent"))).send();
 
         idx.modify(from_act, 0, [&](account &act) {
             act.balance = 0;
@@ -89,6 +88,9 @@ private:
         eosio_assert(transfer.quantity.is_valid(), "invalid transfer");
         eosio_assert(transfer.quantity.amount > 0, "must bet positive quantity");
 
+        if (transfer.to != _self) {
+            return;
+        }
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto act = idx.find(account::key(transfer.memo));
 
@@ -99,6 +101,7 @@ private:
 
         } else { // no exist
             accounts.emplace(_self, [&](account &act) {
+                act.id = nextId();
                 act.twitter = transfer.memo;
                 act.balance = transfer.quantity.amount;
             });
@@ -134,7 +137,7 @@ private:
 
     id nextId() {
         lastId li( _self, _self);
-        id lid = li.exists() ? li.get() + 1 : 0;
+        id lid = li.get_or_default(0) + 1;
         li.set(lid, _self);
         return lid;
     }
