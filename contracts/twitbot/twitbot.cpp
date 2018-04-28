@@ -1,5 +1,6 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/currency.hpp>
+#include <eosiolib/singleton.hpp>
 
 using namespace eosio;
 using namespace std;
@@ -20,7 +21,21 @@ public:
         auto to_act = idx.find(account::key(to_twitter));
         eosio_assert(to_act != idx.end(), "must exists to");
 
-        // TODO: move EOS
+        if (to_act != idx.end()) { // exists
+            idx.modify(to_act, 0, [&](account &act) {
+                act.balance = act.balance + quantity;
+            });
+
+        } else { // no exist
+            accounts.emplace(_self, [&](account &act) {
+                act.twitter = to_twitter;
+                act.balance = quantity;
+            });
+        }
+
+        idx.modify(from_act, 0, [&](account &act) {
+            act.balance = act.balance - quantity;
+        });
     }
 
     //@abi action
@@ -30,15 +45,14 @@ public:
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto from_act = idx.find(account::key(from_twitter));
         eosio_assert(from_act != idx.end(), "must exists from");
+        eosio_assert(from_act->name > 0, "must has name"); // TODO: test this
 
         action(permission_level{_self, N(active)}, N(eosio.token), N(transfer),
                make_tuple(_self, from_act->name, from_act->balance, string("Twitbot sent"))).send();
 
-        idx.modify(from_act, 0, [&](account& act) {
+        idx.modify(from_act, 0, [&](account &act) {
             act.balance = 0;
         });
-
-        print("withdraw");
     }
 
     //@abi action
@@ -49,7 +63,7 @@ public:
         auto from_act = idx.find(account::key(from_twitter));
         eosio_assert(from_act != idx.end(), "must exists from");
 
-        idx.modify(from_act, 0, [&](account& act) {
+        idx.modify(from_act, 0, [&](account &act) {
             act.name = to_eos;
         });
     }
@@ -79,25 +93,26 @@ private:
         auto act = idx.find(account::key(transfer.memo));
 
         if (act != idx.end()) { // exists
-            idx.modify(act, 0, [&](account& act) {
+            idx.modify(act, 0, [&](account &act) {
                 act.balance = act.balance + transfer.quantity.amount;
             });
 
-         } else { // no exist
-            accounts.emplace(_self, [&](account& act) {
+        } else { // no exist
+            accounts.emplace(_self, [&](account &act) {
                 act.twitter = transfer.memo;
                 act.balance = transfer.quantity.amount;
             });
-         }
+        }
     }
 
     //@abi table accounts i64
     struct account {
+        uint64_t id;
         account_name name;
         string twitter;
         uint64_t balance = 0;
 
-        account_name primary_key() const { return name; }
+        account_name primary_key() const { return id; }
 
         static key256 key(const string &twitter) {
             return key256::make_from_word_sequence<uint64_t>(string_to_name(twitter.c_str()));
@@ -105,7 +120,7 @@ private:
 
         key256 get_key() const { return key(twitter); }
 
-        EOSLIB_SERIALIZE(account, (name)(twitter)(balance))
+        EOSLIB_SERIALIZE(account, (id)(name)(twitter)(balance))
     };
 
     typedef eosio::multi_index<N(accounts), account,
@@ -113,6 +128,18 @@ private:
     > accounts_index;
 
     accounts_index accounts;
+
+    typedef uint64_t id;
+    typedef singleton<N(lastId), id> lastId;
+
+    id nextId() {
+        lastId li( _self, _self);
+        id lid = li.exists() ? li.get() + 1 : 0;
+        li.set(lid, _self);
+        return lid;
+    }
+
+
 };
 
 extern "C" {
