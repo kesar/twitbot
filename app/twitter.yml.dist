@@ -1,0 +1,19 @@
+log:
+  file: twitter.log
+  level: "info"
+rpc:
+  host: 127.0.0.1 #174.138.51.250
+  port: 8888
+  private_key: private_key
+  account: twitbot
+twitter:
+  username: EosTwitbot
+  consumer_key: key
+  consumer_secret: key
+  access_token: token
+  access_token_secret: token
+commands:
+  balance: true
+  tip: true
+  withdraw: true
+  help: true

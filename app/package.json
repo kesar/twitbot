@@ -4,10 +4,10 @@
   "description": "node.js based tipping bot for EOS",
   "main": "twitter",
   "dependencies": {
+    "eosjs": "^9.0.1",
     "js-yaml": "~3.2.2",
     "twit": "2.1.0",
-    "winston": "~0.8.1",
-    "eosjs": "^6.1.5"
+    "winston": "~0.8.1"
   },
   "devDependencies": {},
   "scripts": {
