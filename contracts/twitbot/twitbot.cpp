@@ -11,19 +11,32 @@ public:
     //@abi action
     void tip(const string &from_twitter, const string &to_twitter, const uint64_t quantity) {
         require_auth(_self);
-        print("Tip");
+
+        auto idx = accounts.template get_index<N(bytwitter)>();
+        auto from_act = idx.find(account::key(from_twitter));
+        eosio_assert(from_act != idx.end(), "must exists from");
+        eosio_assert(from_act->balance >= quantity, "must have funds");
+
+        auto to_act = idx.find(account::key(to_twitter));
+        eosio_assert(to_act != idx.end(), "must exists to");
+
+        // TODO: move EOS
     }
 
     //@abi action
-    void withdraw(const string &from_twitter, const account_name to_eos) {
+    void withdraw(const string &from_twitter) {
         require_auth(_self);
 
-        // TODO: check amount
+        auto idx = accounts.template get_index<N(bytwitter)>();
+        auto from_act = idx.find(account::key(from_twitter));
+        eosio_assert(from_act != idx.end(), "must exists from");
 
         action(permission_level{_self, N(active)}, N(eosio.token), N(transfer),
-               make_tuple(_self, to_eos, 0, string(""))).send();
+               make_tuple(_self, from_act->name, from_act->balance, string("Twitbot sent"))).send();
 
-        // TODO: remove from table amount
+        idx.modify(from_act, 0, [&](account& act) {
+            act.balance = 0;
+        });
 
         print("withdraw");
     }
@@ -31,7 +44,14 @@ public:
     //@abi action
     void claim(const string &from_twitter, const account_name to_eos) {
         require_auth(_self);
-        print("claim!");
+
+        auto idx = accounts.template get_index<N(bytwitter)>();
+        auto from_act = idx.find(account::key(from_twitter));
+        eosio_assert(from_act != idx.end(), "must exists from");
+
+        idx.modify(from_act, 0, [&](account& act) {
+            act.name = to_eos;
+        });
     }
 
     void apply(const account_name contract, const account_name act) {
@@ -58,15 +78,15 @@ private:
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto act = idx.find(account::key(transfer.memo));
 
-        if (act == idx.end()) { // exists
+        if (act != idx.end()) { // exists
             idx.modify(act, 0, [&](account& act) {
                 act.balance = act.balance + transfer.quantity.amount;
             });
 
          } else { // no exist
             accounts.emplace(_self, [&](account& act) {
-                act.name = transfer.from;
                 act.twitter = transfer.memo;
+                act.balance = transfer.quantity.amount;
             });
          }
     }

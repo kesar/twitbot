@@ -35,9 +35,6 @@
       "fields": [{
           "name": "from_twitter",
           "type": "string"
-        },{
-          "name": "to_eos",
-          "type": "account_name"
         }
       ]
     },{
