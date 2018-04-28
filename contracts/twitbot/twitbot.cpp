@@ -8,11 +8,13 @@ class twitbot : public eosio::contract {
 public:
     twitbot(action_name self) : contract(self), accounts(_self, _self) {}
 
+    //@abi action
     void tip(const string &from_twitter, const string &to_twitter, const uint64_t quantity) {
         require_auth(_self);
         print("Tip");
     }
 
+    //@abi action
     void withdraw(const string &from_twitter, const account_name to_eos) {
         require_auth(_self);
 
@@ -26,6 +28,7 @@ public:
         print("withdraw");
     }
 
+    //@abi action
     void claim(const string &from_twitter, const account_name to_eos) {
         require_auth(_self);
         print("claim!");
@@ -34,7 +37,7 @@ public:
     void apply(const account_name contract, const account_name act) {
 
         if (act == N(transfer)) {
-            _transfer(unpack_action_data<currency::transfer>(), contract);
+            transferReceived(unpack_action_data<currency::transfer>(), contract);
             return;
         }
 
@@ -44,12 +47,29 @@ public:
         };
     }
 
-    void _transfer(const currency::transfer &transfer, const account_name code) {
-        eosio_assert(transfer.memo.length() > 0, "needs a memo with the name");
-        print(has_account(transfer.memo));
-    }
-
 private:
+    void transferReceived(const currency::transfer &transfer, const account_name code) {
+        eosio_assert(code == N(eosio.token), "needs to come from eosio.token");
+        eosio_assert(transfer.memo.length() > 0, "needs a memo with the name");
+        eosio_assert(transfer.quantity.symbol == S(4, EOS), "only EOS token allowed");
+        eosio_assert(transfer.quantity.is_valid(), "invalid transfer");
+        eosio_assert(transfer.quantity.amount > 0, "must bet positive quantity");
+
+        auto idx = accounts.template get_index<N(bytwitter)>();
+        auto act = idx.find(account::key(transfer.memo));
+
+        if (act == idx.end()) { // exists
+            idx.modify(act, 0, [&](account& act) {
+                act.balance = act.balance + transfer.quantity.amount;
+            });
+
+         } else { // no exist
+            accounts.emplace(_self, [&](account& act) {
+                act.name = transfer.from;
+                act.twitter = transfer.memo;
+            });
+         }
+    }
 
     //@abi table accounts i64
     struct account {
@@ -73,19 +93,15 @@ private:
     > accounts_index;
 
     accounts_index accounts;
-
-    bool has_account( const string& twitter) const {
-        auto idx = accounts.template get_index<N(bytwitter)>();
-        auto itr = idx.find(account::key(twitter));
-        return itr != idx.end();
-    }
 };
 
 extern "C" {
-[[noreturn]] void apply(uint64_t receiver, uint64_t code, uint64_t action) {
+void apply(uint64_t receiver, uint64_t code, uint64_t action) {
     auto self = receiver;
     twitbot contract(self);
     contract.apply(code, action);
     eosio_exit(0);
 }
 }
+
+// EOSIO_ABI(twitbot, (tip)(withdraw)(claim))
