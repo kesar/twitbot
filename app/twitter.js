@@ -153,7 +153,25 @@ stream.on("tweet", function (tweet) {
             }
 
             node.transaction(account, twitbot => {
-                    twitbot.withdraw(from, {authorization: account})
+                twitbot.withdraw(from, {authorization: account})
+            });
+
+            break;
+
+        case "claim":
+            var match = message.match(/^.?claim (\S+)/);
+            if (match === null) {
+                client.post("statuses/update", {
+                    status: "@" + from + " Usage: !claim <your_eos_account> @ " + settings.twitter.username,
+                    in_reply_to_status_id: tweetId
+                }, function (error, tweet, response) {
+                    return;
+                });
+            }
+
+            var eos_account = match[1];
+            node.transaction(account, twitbot => {
+                twitbot.claim(from, eos_account, {authorization: account})
             });
 
             break;
@@ -161,7 +179,7 @@ stream.on("tweet", function (tweet) {
         case "help":
             client.post("statuses/update", {
                 in_reply_to_status_id: tweetId,
-                status: "@" + from + " Here is a list of commands: !balance !tip !withdraw"
+                status: "@" + from + " Here is a list of commands: !balance !tip !withdraw !claim"
             }, function (error, tweet, response) {
                 return;
             });

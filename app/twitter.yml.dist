@@ -17,3 +17,4 @@ commands:
   tip: true
   withdraw: true
   help: true
+  claim: true
