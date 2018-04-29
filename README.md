@@ -1,7 +1,7 @@
 🦉 twitBot
 ========================
 
-twitBot is a simple bot in node to tip users in twitter.
+twitBot is a simple bot in node to tip users in twitter. ( https://twitter.com/EosTwitbot )
 
 📌 Getting Started
 ------------
