@@ -118,7 +118,7 @@ private:
         account_name primary_key() const { return id; }
 
         static key256 key(const string &twitter) {
-            return key256::make_from_word_sequence<uint64_t>(string_to_name(twitter.c_str()));
+            return key256::make_from_word_sequence<uint64_t>(hash<string>{}(twitter));
         }
 
         key256 get_key() const { return key(twitter); }
