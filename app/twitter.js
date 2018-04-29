@@ -25,6 +25,8 @@ node = Eos.Localnet({
     keyProvider: settings.rpc.private_key
 });
 
+account = settings.rpc.account;
+
 winston.info("Connecting to " + settings.rpc.host + ":" + settings.rpc.port);
 
 node.getAccount(settings.rpc.account).then(function (result) {
@@ -75,14 +77,14 @@ stream.on("tweet", function (tweet) {
         case "balance":
             node.getTableRows({
                 "json": true,
-                "scope": settings.rpc.account,
-                "code": settings.rpc.account,
-                "table": "account",
+                "scope": account,
+                "code": account,
+                "table": "accounts",
                 "limit": 500 // TODO: do proper filter
             }).then(function (result) {
                 var balance = 0;
                 for (var i = 0, len = result.rows.length; i < len; i++) {
-                    if (result.rows[i].twitter_account === from) {
+                    if (result.rows[i].twitter === from) {
                         balance = result.rows[i].balance;
                         break;
                     }
@@ -132,34 +134,11 @@ stream.on("tweet", function (tweet) {
                 });
             }
 
-            //eosioc push action twitbot tip '{"from_twitter": "inita", "to_twitter": "kesarito", "quantity": 5000}' --permission twitbot@active
-
-            var options = {
-                broadcast: true,
-                sign: true,
-                scope: ['inita', settings.rpc.account],
-                messages: [
-                    {
-                        code: settings.rpc.account,
-                        type: 'tip',
-                        authorization: [{
-                            account: settings.rpc.account,
-                            permission: 'active'
-                        }],
-                        data: {
-                            from_twitter: from,
-                            to_twitter: to,
-                            quantity: amount
-                        }
-                    }
-                ]
-            };
-
-            node.contract(settings.rpc.account, options).then(function (result) {
-                winston.info(result);
-            }).catch(function(error) {
-                winston.error(error);
+            node.transaction(account, twitbot => {
+                twitbot.tip(from, to, amount, {authorization: account})
             });
+            // TODO: catch errors
+
             break;
 
         case "withdraw":
@@ -173,35 +152,10 @@ stream.on("tweet", function (tweet) {
                 });
             }
 
-            // eosioc push action twitbot withdraw '{"to_eos": "inita", "from_twitter": "inita"}' --permission twitbot@active
-
-            var address = match[1];
-
-            var options = {
-                broadcast: true,
-                sign: true,
-                scope: ['inita', settings.rpc.account],
-                messages: [
-                    {
-                        code: settings.rpc.account,
-                        type: 'withdraw',
-                        authorization: [{
-                            account: settings.rpc.account,
-                            permission: 'active'
-                        }],
-                        data: {
-                            to_eos: address,
-                            from_twitter: from
-                        }
-                    }
-                ]
-            };
-
-            node.contract(settings.rpc.account, options).then(function (result) {
-                winston.info(result);
-            }).catch(function (error) {
-                winston.error(error);
+            node.transaction(account, twitbot => {
+                    twitbot.withdraw(from, {authorization: account})
             });
+
             break;
 
         case "help":
