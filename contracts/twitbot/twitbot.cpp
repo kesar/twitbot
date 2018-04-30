@@ -1,6 +1,7 @@
 #include <eosiolib/eosio.hpp>
 #include <eosiolib/currency.hpp>
 #include <eosiolib/singleton.hpp>
+#include <eosiolib/crypto.h>
 
 using namespace eosio;
 using namespace std;
@@ -15,8 +16,8 @@ public:
 
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto from_act = idx.find(account::key(from_twitter));
-        eosio_assert(from_act != idx.end(), "must exists from");
-        eosio_assert(from_act->balance >= quantity, "must have funds");
+        eosio_assert(static_cast<uint32_t>(from_act != idx.end()), "must exists from");
+        eosio_assert(static_cast<uint32_t>(from_act->balance >= quantity), "must have funds");
 
         auto to_act = idx.find(account::key(to_twitter));
         if (to_act != idx.end()) { // exists
@@ -26,7 +27,8 @@ public:
 
         } else { // no exist
             accounts.emplace(_self, [&](account &act) {
-                act.id = nextId();
+                act.pkey = accounts.available_primary_key();
+                act.twitter_key = account::key(to_twitter);
                 act.twitter = to_twitter;
                 act.balance = quantity;
             });
@@ -43,11 +45,11 @@ public:
 
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto from_act = idx.find(account::key(from_twitter));
-        eosio_assert(from_act != idx.end(), "must exists from");
-        eosio_assert(from_act->name > 0, "must has name"); // TODO: test this
+        eosio_assert(static_cast<uint32_t>(from_act != idx.end()), "must exists from");
+        eosio_assert(static_cast<uint32_t>(from_act->name > 0), "must has name"); // TODO: test this
 
         action(permission_level{_self, N(active)}, N(eosio.token), N(transfer),
-               make_tuple(_self, from_act->name, asset(from_act->balance, S(4,EOS)), string("Twitbot sent"))).send();
+               make_tuple(_self, from_act->name, asset(from_act->balance, S(4, EOS)), string("Twitbot sent"))).send();
 
         idx.modify(from_act, 0, [&](account &act) {
             act.balance = 0;
@@ -60,7 +62,7 @@ public:
 
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto from_act = idx.find(account::key(from_twitter));
-        eosio_assert(from_act != idx.end(), "must exists from");
+        eosio_assert(static_cast<uint32_t>(from_act != idx.end()), "must exists from");
 
         idx.modify(from_act, 0, [&](account &act) {
             act.name = to_eos;
@@ -82,15 +84,16 @@ public:
 
 private:
     void transferReceived(const currency::transfer &transfer, const account_name code) {
-        eosio_assert(code == N(eosio.token), "needs to come from eosio.token");
-        eosio_assert(transfer.memo.length() > 0, "needs a memo with the name");
-        eosio_assert(transfer.quantity.symbol == S(4, EOS), "only EOS token allowed");
-        eosio_assert(transfer.quantity.is_valid(), "invalid transfer");
-        eosio_assert(transfer.quantity.amount > 0, "must bet positive quantity");
+        eosio_assert(static_cast<uint32_t>(code == N(eosio.token)), "needs to come from eosio.token");
+        eosio_assert(static_cast<uint32_t>(transfer.memo.length() > 0), "needs a memo with the name");
+        eosio_assert(static_cast<uint32_t>(transfer.quantity.symbol == S(4, EOS)), "only EOS token allowed");
+        eosio_assert(static_cast<uint32_t>(transfer.quantity.is_valid()), "invalid transfer");
+        eosio_assert(static_cast<uint32_t>(transfer.quantity.amount > 0), "must bet positive quantity");
 
         if (transfer.to != _self) {
             return;
         }
+
         auto idx = accounts.template get_index<N(bytwitter)>();
         auto act = idx.find(account::key(transfer.memo));
 
@@ -101,48 +104,46 @@ private:
 
         } else { // no exist
             accounts.emplace(_self, [&](account &act) {
-                act.id = nextId();
+                act.pkey = accounts.available_primary_key();
+                act.twitter_key = account::key(transfer.memo);
                 act.twitter = transfer.memo;
-                act.balance = transfer.quantity.amount;
+                act.balance = static_cast<uint64_t>(transfer.quantity.amount);
             });
         }
     }
 
     //@abi table accounts i64
     struct account {
-        uint64_t id;
+        uint64_t pkey;
         account_name name;
+        uint128_t twitter_key;
         string twitter;
         uint64_t balance = 0;
 
-        account_name primary_key() const { return id; }
-
-        static key256 key(const string &twitter) {
-            return key256::make_from_word_sequence<uint64_t>(hash<string>{}(twitter));
+        uint64_t primary_key() const {
+            return pkey;
         }
 
-        key256 get_key() const { return key(twitter); }
+        uint128_t get_twitter_key() const {
+            return twitter_key;
+        }
 
-        EOSLIB_SERIALIZE(account, (id)(name)(twitter)(balance))
+        static uint128_t key(const string &string) {
+            checksum256 checksum;
+            sha256(const_cast<char *>(string.c_str()), string.size(), &checksum);
+            return reinterpret_cast<uint128_t *>(checksum.hash)[0];
+        }
+
+        EOSLIB_SERIALIZE(account, (pkey)(name)(twitter_key)(twitter)(balance))
     };
 
-    typedef eosio::multi_index<N(accounts), account,
-            eosio::indexed_by<N(bytwitter), eosio::const_mem_fun<account, key256, &account::get_key> >
+    typedef eosio::multi_index<
+            N(accounts),
+            account,
+            eosio::indexed_by<N(bytwitter), eosio::const_mem_fun<account, uint128_t, &account::get_twitter_key>>
     > accounts_index;
 
     accounts_index accounts;
-
-    typedef uint64_t id;
-    typedef singleton<N(lastId), id> lastId;
-
-    id nextId() {
-        lastId li( _self, _self);
-        id lid = li.get_or_default(0) + 1;
-        li.set(lid, _self);
-        return lid;
-    }
-
-
 };
 
 extern "C" {

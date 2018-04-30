@@ -5,11 +5,14 @@
       "name": "account",
       "base": "",
       "fields": [{
-          "name": "id",
+          "name": "pkey",
           "type": "uint64"
         },{
           "name": "name",
           "type": "account_name"
+        },{
+          "name": "twitter_key",
+          "type": "uint128"
         },{
           "name": "twitter",
           "type": "string"
@@ -71,7 +74,7 @@
       "name": "accounts",
       "index_type": "i64",
       "key_names": [
-        "id"
+        "pkey"
       ],
       "key_types": [
         "uint64"
